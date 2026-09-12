@@ -8,7 +8,7 @@ const recipeLevelOptions = [
 ];
 
 const RecipeEffortForm = () => {
-  const { register, setValue, control } = useFormContext();
+  const { register, setValue, getValues, control } = useFormContext();
 
   return (
     <div className="mt-6">
@@ -19,15 +19,21 @@ const RecipeEffortForm = () => {
         </p>
         <div className="flex w-full gap-6 mt-6">
           <div className={"flex-1 shrink-0"}>
-            <Select
-              {...register("level")}
-              label={"Menu Level of Recipe"}
-              options={recipeLevelOptions}
-              required
-              placeholder={"Select level of recipe"}
-              onValueChange={(value) => {
-                setValue("level", value);
-              }}
+            <Controller
+              name={"level"}
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  label={"Menu Level of Recipe"}
+                  options={recipeLevelOptions}
+                  required
+                  placeholder={"Select level of recipe"}
+                  onValueChange={(value) => {
+                    setValue("level", value);
+                  }}
+                />
+              )}
             />
           </div>
           <div className={"flex-1 shrink-0"}>
