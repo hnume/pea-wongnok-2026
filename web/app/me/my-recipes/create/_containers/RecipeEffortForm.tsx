@@ -1,10 +1,11 @@
 import { Radio, RadioGroup, Select } from "@/components/bases";
+import { LEVELS } from "@/types/FormValues/recipeCreationForm";
 import { Controller, useFormContext } from "react-hook-form";
 
 const recipeLevelOptions = [
-  { label: "Easy", value: "EASY" },
-  { label: "Medium", value: "MEDIUM" },
-  { label: "Hard", value: "HARD" },
+  { label: "Easy", value: LEVELS.EASY },
+  { label: "Medium", value: LEVELS.MEDIUM },
+  { label: "Hard", value: LEVELS.HARD },
 ];
 
 const RecipeEffortForm = () => {

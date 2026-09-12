@@ -1,9 +1,14 @@
 import { Textarea, TextField } from "@/components/bases";
+import { RecipeCreationFormValues } from "@/types/FormValues/recipeCreationForm";
 import { useFormContext } from "react-hook-form";
 
 const RecipeTheDishForm = () => {
-  const { register } = useFormContext();
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<RecipeCreationFormValues>();
 
+  console.log("errors", errors);
   return (
     <div className="bg-white p-5 mt-4">
       <p className="wongnok-text-h3">The Dish</p>
@@ -15,6 +20,8 @@ const RecipeTheDishForm = () => {
           {...register("name")}
           label={"Menu Name"}
           placeholder={"e.g. Thai basil chicken with a crisp fried egg"}
+          error={!!errors.name?.message}
+          errorMessage={errors.name?.message}
           required
         />
         <Textarea
@@ -23,6 +30,8 @@ const RecipeTheDishForm = () => {
           placeholder={
             "Two or three sentences — what it tastes like, when you cook it, any shortcut you love."
           }
+          error={!!errors.description?.message}
+          errorMessage={errors.description?.message}
           required
         />
         <TextField
@@ -30,6 +39,8 @@ const RecipeTheDishForm = () => {
           label={"Image URL"}
           placeholder={"https://…/my-dish.jpg"}
           helperText={"Paste a link to a photo — landscape works best."}
+          error={!!errors.imageUrl?.message}
+          errorMessage={errors.imageUrl?.message}
         />
       </div>
     </div>

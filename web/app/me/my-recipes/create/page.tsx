@@ -6,16 +6,51 @@ import RecipeEffortForm from "./_containers/RecipeEffortForm";
 import RecipeIngredientForm from "./_containers/RecipeIngredientForm";
 import RecipeInstructionForm from "./_containers/RecipeInstructionForm";
 import { FormProvider, useForm } from "react-hook-form";
-import { RecipeCreationFormValues } from "@/types/FormValues/recipeCreationForm";
+import {
+  LEVELS,
+  RecipeCreationFormValues,
+} from "@/types/FormValues/recipeCreationForm";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z4 from "zod/v4";
+
+const recipeCreationValidateSchema = z4.object({
+  name: z4.string().nonempty({ error: "กรุณากรอกชื่อเมนูอาหาร" }),
+  description: z4.string().nonempty({ error: "กรุณากรอกรายละเอียดเมนูอาหาร" }),
+  imageUrl: z4.url().optional(),
+  level: z4.enum(LEVELS, {
+    error: "Please select level of recipe",
+  }),
+  time: z4.string(),
+  ingredients: z4
+    .array(
+      z4.object({
+        description: z4.string().nonempty({
+          error: "Please input ingredient",
+        }),
+      }),
+    )
+    .min(1, { error: "Please add at least one ingredient" }),
+  instructions: z4
+    .array(
+      z4.object({
+        description: z4.string().nonempty({
+          error: "Please input how to make",
+        }),
+      }),
+    )
+    .min(1, { error: "Please add at least one ingredient" }),
+});
 
 const RecipeCreationPage = () => {
   const methods = useForm<RecipeCreationFormValues>({
+    mode: "onTouched",
     defaultValues: {
-      level: "EASY",
+      level: LEVELS.EASY,
       time: "JUST_MINUTES",
       ingredients: [{ description: "" }],
       instructions: [{ description: "" }],
     },
+    resolver: zodResolver(recipeCreationValidateSchema),
   });
 
   const handleSubmit = (data: unknown) => {
