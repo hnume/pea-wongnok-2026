@@ -17,7 +17,7 @@ interface IRecipesItem {
   updatedAt: string | Date;
 }
 
-interface IRecipes {
+export interface IRecipes {
   total: number;
   results: IRecipesItem[];
 }
