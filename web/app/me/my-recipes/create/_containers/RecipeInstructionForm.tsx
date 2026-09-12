@@ -1,30 +1,21 @@
 import { Button, Textarea } from "@/components/bases";
+import { RecipeCreationFormValues } from "@/types/FormValues/recipeCreationForm";
 import { XIcon } from "lucide-react";
-import { ChangeEvent, useState } from "react";
+import { useFieldArray, useFormContext } from "react-hook-form";
 
 const RecipeInstructionForm = () => {
-  const [instructions, setInstructions] = useState<string[]>([""]);
+  const { register, control } = useFormContext<RecipeCreationFormValues>();
+  const { fields, append, remove } = useFieldArray({
+    name: "instructions",
+    control: control,
+  });
 
   const handleAddInstruction = () => {
-    setInstructions((prev) => [...prev, ""]);
+    append({ description: "" });
   };
 
   const handleRemoveInstruction = (index: number) => {
-    let remainIngredients = [];
-    const startIngredients = instructions.slice(0, index);
-    const endIngredients = instructions.slice(index + 1);
-    remainIngredients = [...startIngredients, ...endIngredients];
-    setInstructions(remainIngredients);
-  };
-
-  const handleInstructionChange = (
-    event: ChangeEvent<HTMLTextAreaElement, HTMLTextAreaElement>,
-    index: number,
-  ) => {
-    const value = event.target.value;
-    const newIngredientValues = [...instructions];
-    newIngredientValues[index] = value;
-    setInstructions(newIngredientValues);
+    remove(index);
   };
 
   return (
@@ -34,7 +25,7 @@ const RecipeInstructionForm = () => {
         <p className="wongnok-text-body text-muted-foreground">
           {`Write it the way you'd say it out loud. Short steps are easiest to follow.`}
         </p>
-        {instructions.map((instruction, index) => (
+        {fields.map((fields, index) => (
           <div key={index} className="flex items-start gap-4 mt-6">
             <div className="p-2 w-6 h-6 wongnok-text-xs font-bold bg-primary-subtle text-primary relative rounded-4xl">
               <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -42,11 +33,10 @@ const RecipeInstructionForm = () => {
               </p>
             </div>
             <Textarea
+              {...register(`instructions.${index}.description`)}
               name={`how-${index + 1}`}
               placeholder={`Step ${index + 1} — what happens, and how you know it's ready.`}
               className="w-full"
-              value={instruction}
-              onChange={(event) => handleInstructionChange(event, index)}
             />
             <Button
               type={"button"}

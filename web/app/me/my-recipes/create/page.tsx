@@ -14,6 +14,7 @@ const RecipeCreationPage = () => {
       level: "EASY",
       time: "JUST_MINUTES",
       ingredients: [{ description: "" }],
+      instructions: [{ description: "" }],
     },
   });
 
