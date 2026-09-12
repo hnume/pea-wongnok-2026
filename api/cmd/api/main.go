@@ -37,7 +37,7 @@ import (
 
 // devUserUID คือ "sub" ของ dev@pea.co.th ใน Keycloak realm "pea"
 // ต้องตรงกับ seedUserUID ใน cmd/seed/main.go (ใช้กับ middleware.DevAuth เท่านั้น)
-const devUserUID = "326e938b-8d26-4bed-ac0b-a365510175a7"
+const devUserUID = "723154bb-d7af-485f-baaf-0425a0a79ea0"
 
 // @securityDefinitions.apikey	BearerAuth
 // @in							header
@@ -140,15 +140,14 @@ func run() error {
 
 	// Recipe resource
 	recipeGroup := v1.Group("/recipes")
-	recipeGroup.Use(authGuard)
-	recipeGroup.POST("", recipeHandler.Create)
 	recipeGroup.GET("", recipeHandler.GetRecipes)
-	recipeGroup.GET("/:id", recipeHandler.GetRecipe)
-	recipeGroup.PUT("/:id", recipeHandler.Replace)
-	recipeGroup.DELETE("/:id", recipeHandler.Delete)
-	recipeGroup.POST("/:id/favorite", recipeHandler.Favorite)
-	recipeGroup.DELETE("/:id/favorite", recipeHandler.Unfavorite)
-	recipeGroup.POST("/:id/rating", recipeHandler.Rate)
+	recipeGroup.GET("/:id", authGuard, recipeHandler.GetRecipe)
+	recipeGroup.POST("", authGuard, recipeHandler.Create)
+	recipeGroup.PUT("/:id", authGuard, recipeHandler.Replace)
+	recipeGroup.DELETE("/:id", authGuard, recipeHandler.Delete)
+	recipeGroup.POST("/:id/favorite", authGuard, recipeHandler.Favorite)
+	recipeGroup.DELETE("/:id/favorite", authGuard, recipeHandler.Unfavorite)
+	recipeGroup.POST("/:id/rating", authGuard, recipeHandler.Rate)
 
 	// Register swagger
 	router.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

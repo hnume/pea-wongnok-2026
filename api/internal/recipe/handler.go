@@ -80,25 +80,19 @@ func (hdr *handler) Create(ctx *gin.Context) {
 //	@Description	ค้นหาสูตรอาหารทั้งหมด และสามารถกรองด้วย ชื่อ, ความยาก และเรียงตามเวลาที่สร้างได้
 //	@Tags			recipes
 //	@Produce		json
-//	@Security		BearerAuth
 //	@Param			name		query		string	false	"ชื่อของสูตรอาหาร"
 //	@Param			difficulty	query		string	false	"Id ของความยากในการทำ"
-//	@Param			favorite	query		bool	false	"กรองสูตรอาหารตามสถานะรายการโปรดของผู้ใช้ปัจจุบัน: true = เฉพาะที่ถูกใจไว้, false = เฉพาะที่ไม่ได้ถูกใจไว้"
+//	@Param			favorite	query		bool	false	"กรองสูตรอาหารตามสถานะรายการโปรดของผู้ใช้ปัจจุบัน: true = เฉพาะที่ถูกใจไว้, false = เฉพาะที่ไม่ได้ถูกใจไว้ (ต้องยืนยันตัวตน)"
 //	@Param			sort		query		string	false	"เรียงลำดับตามเวลาที่สร้าง"	Enums(ASC, DESC)	default(DESC)
 //	@Param			page		query		int		false	"หน้าที่ต้องการแสดง"		minimum(1)			default(1)
 //	@Param			limit		query		int		false	"จำนวนรายการต่อหน้า"		minimum(1)			maximum(100)	default(12)
 //	@Success		200			{object}	ListRecipesResponse
 //	@Failure		400			{object}	httputil.ErrorResponse
-//	@Failure		401			{object}	httputil.ErrorResponse
 //	@Failure		404			{object}	httputil.ErrorResponse
 //	@Failure		500			{object}	httputil.ErrorResponse
 //	@Router			/recipes [get]
 func (hdr *handler) GetRecipes(ctx *gin.Context) {
-	userID, ok := reqctx.UserID(ctx.Request.Context())
-	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, httputil.ErrorResponse{Message: "unauthorized"})
-		return
-	}
+	userID, _ := reqctx.UserID(ctx.Request.Context())
 
 	var query GetRecipesQuery
 	if err := ctx.ShouldBindQuery(&query); err != nil {
