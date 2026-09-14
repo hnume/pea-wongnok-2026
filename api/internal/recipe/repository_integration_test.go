@@ -404,6 +404,24 @@ func TestRepositoryList(t *testing.T) {
 		assert.EqualValues(t, 1, ratingTotalByID[favorited.ID])
 		assert.Zero(t, ratingTotalByID[notFavorited.ID])
 	})
+
+	t.Run("paginates with page and limit", func(t *testing.T) {
+		firstPage, total, err := repo.List(context.Background(), userID, GetRecipesQuery{Pagination: Pagination{Page: 1, Limit: 1}})
+		require.NoError(t, err)
+		assert.EqualValues(t, 2, total)
+		require.Len(t, firstPage, 1)
+
+		secondPage, total, err := repo.List(context.Background(), userID, GetRecipesQuery{Pagination: Pagination{Page: 2, Limit: 1}})
+		require.NoError(t, err)
+		assert.EqualValues(t, 2, total)
+		require.Len(t, secondPage, 1)
+		assert.NotEqual(t, firstPage[0].ID, secondPage[0].ID)
+
+		thirdPage, total, err := repo.List(context.Background(), userID, GetRecipesQuery{Pagination: Pagination{Page: 3, Limit: 1}})
+		require.NoError(t, err)
+		assert.EqualValues(t, 2, total)
+		assert.Empty(t, thirdPage)
+	})
 }
 
 func TestRepositoryDelete(t *testing.T) {

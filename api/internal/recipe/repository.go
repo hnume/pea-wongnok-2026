@@ -264,7 +264,7 @@ func (repo *repository) List(ctx context.Context, userID uuid.UUID, query GetRec
 	db = db.Order(order)
 
 	// Pagination
-	db = db.Order((query.Page - 1) * query.Limit).Limit(query.Limit)
+	db = db.Offset((query.Page - 1) * query.Limit).Limit(query.Limit)
 
 	// Find
 	var recipes []Recipe
