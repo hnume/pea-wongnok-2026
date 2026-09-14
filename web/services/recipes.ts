@@ -1,5 +1,5 @@
 import { axios } from "@/lib/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 
 interface IRecipesItem {
   id: number;
@@ -22,13 +22,29 @@ export interface IRecipes {
   results: IRecipesItem[];
 }
 
-export const useGetRecipes = () => {
+export interface IGetRecipesQuery {
+  page?: number;
+  limit?: number;
+}
+
+export type GetRecipesQueryOptions = Omit<
+  UseQueryOptions<IRecipes>,
+  "queryKey" | "queryFn"
+>;
+
+// page/limit are part of the queryKey, so each page is cached separately and
+// changing either triggers a fetch automatically.
+export const useGetRecipes = (
+  params?: IGetRecipesQuery,
+  queryOptions?: GetRecipesQueryOptions,
+) => {
   const response = useQuery<IRecipes>({
-    queryKey: ["recipes"],
+    queryKey: ["recipes", params?.page, params?.limit],
     queryFn: async (): Promise<IRecipes> => {
-      const response = await axios.get<IRecipes>("/recipes");
+      const response = await axios.get<IRecipes>("/recipes", { params });
       return response.data;
     },
+    ...queryOptions,
   });
   return response;
 };
