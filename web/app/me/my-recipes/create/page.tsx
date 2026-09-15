@@ -13,6 +13,9 @@ import {
 } from "@/types/FormValues/recipeCreationForm";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z4 from "zod/v4";
+import { IRecipeCreationPayload, useCreateRecipe } from "@/services/recipes";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const recipeCreationValidateSchema = z4.object({
   name: z4.string().nonempty({ error: "กรุณากรอกชื่อเมนูอาหาร" }),
@@ -49,6 +52,7 @@ const recipeCreationValidateSchema = z4.object({
 });
 
 const RecipeCreationPage = () => {
+  const router = useRouter();
   const methods = useForm<RecipeCreationFormValues>({
     mode: "onTouched",
     defaultValues: {
@@ -60,12 +64,75 @@ const RecipeCreationPage = () => {
     resolver: zodResolver(recipeCreationValidateSchema),
   });
 
+  const [isError, setIsError] = useState(false);
+
+  const { mutate: createRecipeMutation, isPending: isCreateRecipePending } =
+    useCreateRecipe({
+      onError: () => {
+        setIsError(true);
+      },
+      onSuccess: (response) => {
+        if (response) {
+          router.push("/");
+        }
+      },
+    });
+
+  const getLevelId = (level: LEVELS) => {
+    switch (level) {
+      case LEVELS.HARD:
+        return "hard";
+      case LEVELS.MEDIUM:
+        return "medium";
+      case LEVELS.EASY:
+      default:
+        return "easy";
+    }
+  };
+
+  const getTimeId = (time: TIMES) => {
+    switch (time) {
+      case TIMES.MORE_THAN_HOUR:
+        return "long";
+      case TIMES.ABOUT_HOUR:
+        return "60m";
+      case TIMES.HALF_HOUR:
+        return "30m";
+      case TIMES.JUST_MINUTES:
+      default:
+        return "10m";
+    }
+  };
+
+  const mapRecipePayload = (
+    data: RecipeCreationFormValues,
+  ): IRecipeCreationPayload => {
+    const { level, time, imageUrl, ...restData } = data;
+    return {
+      ...restData,
+      imageUrl: imageUrl ? imageUrl : undefined,
+      difficultyId: getLevelId(level),
+      durationId: getTimeId(time),
+    };
+  };
+
   const handleSubmit = (data: RecipeCreationFormValues) => {
-    console.log("SUBMITTED", data);
+    const recipePayload = mapRecipePayload(data);
+    createRecipeMutation(recipePayload);
   };
 
   return (
     <div className="px-4 py-8">
+      {isError && (
+        <div
+          className={
+            "bg-destructive/20 text-destructive-strong px-6 py-3 w-full"
+          }
+        >
+          Recipe Creation Error
+        </div>
+      )}
+
       <h1 className="wongnok-text-h2">Create Recipe</h1>
       <p>description </p>
       <FormProvider {...methods}>
@@ -74,7 +141,9 @@ const RecipeCreationPage = () => {
           <RecipeEffortForm />
           <RecipeIngredientForm />
           <RecipeInstructionForm />
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={isCreateRecipePending}>
+            Submit
+          </Button>
         </form>
       </FormProvider>
     </div>

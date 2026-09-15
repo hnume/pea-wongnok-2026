@@ -58,7 +58,7 @@ export const useGetRecipes = (
 
 /** -------------------- CREATE ----------------------- */
 
-interface IRecipeCreationPayload {
+export interface IRecipeCreationPayload {
   name: string;
   description: string;
   imageUrl?: string;
@@ -82,15 +82,17 @@ export type CreateRecipesMutationOptions = Omit<
 >;
 
 export const useCreateRecipe = (
-  payload: IRecipeCreationPayload,
   mutationOption?: CreateRecipesMutationOptions,
 ) => {
   const response = useMutation({
     mutationKey: ["create", "recipes"],
-    mutationFn: async (): Promise<IRecipeCreationResponse> => {
-      const response = await axios.post<IRecipeCreationResponse>("/recipes", {
+    mutationFn: async (
+      payload: IRecipeCreationPayload,
+    ): Promise<IRecipeCreationResponse> => {
+      const response = await axios.post<IRecipeCreationResponse>(
+        "/recipes",
         payload,
-      });
+      );
       return response.data;
     },
     ...mutationOption,
