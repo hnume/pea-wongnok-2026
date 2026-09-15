@@ -1,6 +1,13 @@
 import { axios } from "@/lib/axios";
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
+/** -------------------- GET ----------------------- */
 interface IRecipesItem {
   id: number;
   name: string;
@@ -48,3 +55,53 @@ export const useGetRecipes = (
   });
   return response;
 };
+
+/** -------------------- CREATE ----------------------- */
+
+interface IRecipeCreationPayload {
+  name: string;
+  description: string;
+  imageUrl?: string;
+  difficultyId: "easy" | "medium" | "hard";
+  durationId: "10m" | "30m" | "60m" | "long";
+  ingredients: { description: string }[];
+  instructions: { description: string }[];
+}
+
+interface IRecipeCreationResponse {
+  id: number;
+}
+
+export type CreateRecipesMutationOptions = Omit<
+  UseMutationOptions<
+    IRecipeCreationResponse,
+    AxiosError,
+    IRecipeCreationPayload
+  >,
+  "queryKey" | "queryFn"
+>;
+
+export const useCreateRecipe = (
+  payload: IRecipeCreationPayload,
+  mutationOption?: CreateRecipesMutationOptions,
+) => {
+  const response = useMutation({
+    mutationKey: ["create", "recipes"],
+    mutationFn: async (): Promise<IRecipeCreationResponse> => {
+      const response = await axios.post<IRecipeCreationResponse>("/recipes", {
+        payload,
+      });
+      return response.data;
+    },
+    ...mutationOption,
+  });
+  return response;
+};
+
+/** -------------------- OTHERS ----------------------- */
+
+// PUT/PATCH -> Update
+export const useUpdateRecipe = () => {};
+
+// DELETE -> Delete
+export const useDeleteRecipe = () => {};
