@@ -9,6 +9,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import {
   LEVELS,
   RecipeCreationFormValues,
+  TIMES,
 } from "@/types/FormValues/recipeCreationForm";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z4 from "zod/v4";
@@ -16,11 +17,17 @@ import z4 from "zod/v4";
 const recipeCreationValidateSchema = z4.object({
   name: z4.string().nonempty({ error: "กรุณากรอกชื่อเมนูอาหาร" }),
   description: z4.string().nonempty({ error: "กรุณากรอกรายละเอียดเมนูอาหาร" }),
-  imageUrl: z4.url().optional(),
+  // imageUrl: z4.url().optional(),
+  imageUrl: z4
+    .url({ error: "กรุณากรอก URL รูปภาพให้ถูกต้อง" })
+    .or(z4.literal(""))
+    .optional(),
   level: z4.enum(LEVELS, {
     error: "Please select level of recipe",
   }),
-  time: z4.string(),
+  time: z4.enum(TIMES, {
+    error: "Please select time of recipe",
+  }),
   ingredients: z4
     .array(
       z4.object({
@@ -46,14 +53,14 @@ const RecipeCreationPage = () => {
     mode: "onTouched",
     defaultValues: {
       level: LEVELS.EASY,
-      time: "JUST_MINUTES",
+      time: TIMES.JUST_MINUTES,
       ingredients: [{ description: "" }],
       instructions: [{ description: "" }],
     },
     resolver: zodResolver(recipeCreationValidateSchema),
   });
 
-  const handleSubmit = (data: unknown) => {
+  const handleSubmit = (data: RecipeCreationFormValues) => {
     console.log("SUBMITTED", data);
   };
 

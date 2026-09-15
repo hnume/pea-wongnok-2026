@@ -2,6 +2,7 @@ import { Radio, RadioGroup, Select } from "@/components/bases";
 import {
   LEVELS,
   RecipeCreationFormValues,
+  TIMES,
 } from "@/types/FormValues/recipeCreationForm";
 import { Controller, useFormContext } from "react-hook-form";
 
@@ -61,10 +62,13 @@ const RecipeEffortForm = () => {
                   errorMessage={errors.time?.message}
                   required
                 >
-                  <Radio label={"5 - 10 mins"} value={"JUST_MINUTES"} />
-                  <Radio label={"10 - 30 mins"} value={"HALF_HOUR"} />
-                  <Radio label={"~1 hour"} value={"ABOUT_HOUR"} />
-                  <Radio label={"More than 1 hour"} value={"MORE_THAN_HOUR"} />
+                  <Radio label={"5 - 10 mins"} value={TIMES.JUST_MINUTES} />
+                  <Radio label={"10 - 30 mins"} value={TIMES.HALF_HOUR} />
+                  <Radio label={"~1 hour"} value={TIMES.ABOUT_HOUR} />
+                  <Radio
+                    label={"More than 1 hour"}
+                    value={TIMES.MORE_THAN_HOUR}
+                  />
                 </RadioGroup>
               )}
             />
