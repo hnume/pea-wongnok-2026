@@ -4,11 +4,19 @@ import { XIcon } from "lucide-react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
 const RecipeIngredientForm = () => {
-  const { register, control } = useFormContext<RecipeCreationFormValues>();
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<RecipeCreationFormValues>();
   const { fields, append, remove } = useFieldArray({
     name: "ingredients",
     control: control,
   });
+
+  // `min(1)` fails on the array itself, so it lands outside the per-row errors.
+  const ingredientsError =
+    errors.ingredients?.root?.message ?? errors.ingredients?.message;
 
   const handleAddIngredient = () => {
     append({ description: "" });
@@ -26,8 +34,8 @@ const RecipeIngredientForm = () => {
           {`One per line, with the amount.`}
         </p>
         {fields.map((field, index) => (
-          <div key={field.id} className="flex items-center gap-4 mt-6">
-            <div className="p-2 w-6 h-6 wongnok-text-xs font-bold bg-primary-subtle text-primary relative rounded-4xl">
+          <div key={field.id} className="flex items-start gap-4 mt-6">
+            <div className="p-2 w-6 h-6 shrink-0 wongnok-text-xs font-bold bg-primary-subtle text-primary relative rounded-4xl">
               <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 {index + 1}
               </p>
@@ -36,6 +44,8 @@ const RecipeIngredientForm = () => {
               {...register(`ingredients.${index}.description`)}
               placeholder={"e.g. 2 tbsp fish sauce"}
               className="w-full"
+              error={!!errors.ingredients?.[index]?.description?.message}
+              errorMessage={errors.ingredients?.[index]?.description?.message}
             />
             <Button
               type={"button"}
@@ -48,6 +58,11 @@ const RecipeIngredientForm = () => {
             </Button>
           </div>
         ))}
+        {ingredientsError ? (
+          <p className="wongnok-text-xs font-medium text-destructive-strong mt-4">
+            {ingredientsError}
+          </p>
+        ) : null}
         <Button
           type={"button"}
           variant={"outlined"}

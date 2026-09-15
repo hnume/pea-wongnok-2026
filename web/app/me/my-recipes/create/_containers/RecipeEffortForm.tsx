@@ -1,5 +1,8 @@
 import { Radio, RadioGroup, Select } from "@/components/bases";
-import { LEVELS } from "@/types/FormValues/recipeCreationForm";
+import {
+  LEVELS,
+  RecipeCreationFormValues,
+} from "@/types/FormValues/recipeCreationForm";
 import { Controller, useFormContext } from "react-hook-form";
 
 const recipeLevelOptions = [
@@ -9,7 +12,11 @@ const recipeLevelOptions = [
 ];
 
 const RecipeEffortForm = () => {
-  const { register, setValue, getValues, control } = useFormContext();
+  const {
+    setValue,
+    control,
+    formState: { errors },
+  } = useFormContext<RecipeCreationFormValues>();
 
   return (
     <div className="mt-6">
@@ -30,8 +37,11 @@ const RecipeEffortForm = () => {
                   options={recipeLevelOptions}
                   required
                   placeholder={"Select level of recipe"}
+                  error={!!errors.level?.message}
+                  errorMessage={errors.level?.message}
                   onValueChange={(value) => {
-                    setValue("level", value);
+                    if (value === null) return;
+                    setValue("level", value, { shouldValidate: true });
                   }}
                 />
               )}
@@ -47,6 +57,8 @@ const RecipeEffortForm = () => {
                   variant={"outlined"}
                   className={"grid grid-cols-2"}
                   {...field}
+                  error={!!errors.time?.message}
+                  errorMessage={errors.time?.message}
                   required
                 >
                   <Radio label={"5 - 10 mins"} value={"JUST_MINUTES"} />

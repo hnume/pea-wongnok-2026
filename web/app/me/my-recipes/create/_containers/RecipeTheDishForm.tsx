@@ -8,7 +8,6 @@ const RecipeTheDishForm = () => {
     formState: { errors },
   } = useFormContext<RecipeCreationFormValues>();
 
-  console.log("errors", errors);
   return (
     <div className="bg-white p-5 mt-4">
       <p className="wongnok-text-h3">The Dish</p>
