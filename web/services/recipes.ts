@@ -49,8 +49,6 @@ export const useGetRecipes = (
   const response = useQuery<IRecipes>({
     queryKey: ["recipes", params?.page, params?.limit],
     queryFn: async (): Promise<IRecipes> => {
-      const session = await getSession()
-      console.log('session => ',session)
       const response = await axios.get<IRecipes>("/recipes", { params });
       return response.data;
     },

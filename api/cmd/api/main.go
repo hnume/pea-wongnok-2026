@@ -140,7 +140,7 @@ func run() error {
 
 	// Recipe resource
 	recipeGroup := v1.Group("/recipes")
-	recipeGroup.GET("", recipeHandler.GetRecipes)
+	recipeGroup.GET("", authGuard, recipeHandler.GetRecipes)
 	recipeGroup.GET("/:id", authGuard, recipeHandler.GetRecipe)
 	recipeGroup.POST("", authGuard, recipeHandler.Create)
 	recipeGroup.PUT("/:id", authGuard, recipeHandler.Replace)

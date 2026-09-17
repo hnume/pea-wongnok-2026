@@ -27,11 +27,10 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      console.log("session work")
 
-      // session.idToken = token.idToken;
+      session.idToken = token.idToken;
       session.accessToken = token.accessToken;
-      // session.refreshToken = token.refreshToken;
+      session.refreshToken = token.refreshToken;
       return session;
     },
   },
