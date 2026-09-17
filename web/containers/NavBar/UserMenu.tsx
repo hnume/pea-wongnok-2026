@@ -69,7 +69,7 @@ function UserMenu({ user }: UserMenuProps) {
         <DropdownMenuSeparator />
 
         {/* TODO: sign out through auth once it is wired up. */}
-        <DropdownMenuItem onClick={() => {signIn('keycloak')}} className="text-destructive data-highlighted:bg-destructive-subtle">
+        <DropdownMenuItem onClick={() => {signOut()}} className="text-destructive data-highlighted:bg-destructive-subtle">
           <LogOut className="size-4" />
           Sign out
         </DropdownMenuItem>

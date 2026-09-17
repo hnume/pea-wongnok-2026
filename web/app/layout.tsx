@@ -36,7 +36,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const session = await getServerSession(authOptions);
   const user = session?.user
   
-  const customUser: NavbarUser = { name: user?.name ?? "", email: user?.email ?? "", imageUrl: user?.image ?? ""}
+  const customUser: NavbarUser | undefined = user ?  { name: user?.name ?? "", email: user?.email ?? "", imageUrl: user?.image ?? ""} : undefined
 
   return (
     <html
