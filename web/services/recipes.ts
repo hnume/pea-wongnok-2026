@@ -6,6 +6,7 @@ import {
   type UseQueryOptions,
 } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { getSession } from "next-auth/react";
 
 /** -------------------- GET ----------------------- */
 interface IRecipesItem {
@@ -48,6 +49,8 @@ export const useGetRecipes = (
   const response = useQuery<IRecipes>({
     queryKey: ["recipes", params?.page, params?.limit],
     queryFn: async (): Promise<IRecipes> => {
+      const session = await getSession()
+      console.log('session => ',session)
       const response = await axios.get<IRecipes>("/recipes", { params });
       return response.data;
     },
