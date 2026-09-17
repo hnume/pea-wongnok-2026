@@ -13,6 +13,8 @@ export type NavbarProps = {
 };
 
 function Navbar({ user }: NavbarProps) {
+
+  {console.log(user)}
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-card">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-5">

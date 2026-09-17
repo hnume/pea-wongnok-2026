@@ -20,6 +20,7 @@ import {
   type NavItem,
   type NavbarUser,
 } from "./navConfig";
+import { signIn, signOut } from "next-auth/react";
 
 function UserMenuLinks({ links }: { links: NavItem[] }) {
   return (
@@ -68,7 +69,7 @@ function UserMenu({ user }: UserMenuProps) {
         <DropdownMenuSeparator />
 
         {/* TODO: sign out through auth once it is wired up. */}
-        <DropdownMenuItem className="text-destructive data-highlighted:bg-destructive-subtle">
+        <DropdownMenuItem onClick={() => {signIn('keycloak')}} className="text-destructive data-highlighted:bg-destructive-subtle">
           <LogOut className="size-4" />
           Sign out
         </DropdownMenuItem>
