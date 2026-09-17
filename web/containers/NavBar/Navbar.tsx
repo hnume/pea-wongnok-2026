@@ -1,3 +1,4 @@
+'use client'
 import { Button } from "@/components/bases";
 
 import Logo from "./Logo";
@@ -5,6 +6,7 @@ import MobileNav from "./MobileNav";
 import NavLinks from "./NavLinks";
 import UserMenu from "./UserMenu";
 import type { NavbarUser } from "./navConfig";
+import { signIn } from "next-auth/react";
 
 export type NavbarProps = {
   user?: NavbarUser | null;
@@ -24,7 +26,7 @@ function Navbar({ user }: NavbarProps) {
 
         <div className="hidden md:flex">
           {/* TODO: route to the sign-in page once auth is wired up. */}
-          {user ? <UserMenu user={user} /> : <Button>Sign in</Button>}
+          {user ? <UserMenu user={user} /> : <Button onClick={() => signIn('keycloak')}>Sign in</Button>}
         </div>
 
         <div className="flex md:hidden">

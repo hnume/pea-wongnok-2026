@@ -3,6 +3,8 @@ import { IBM_Plex_Sans, IBM_Plex_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import { Footer, Navbar, type NavbarUser } from "@/containers";
 import TanstackQueryProvider from "@/lib/tanstack/TanstackQueryProvider";
+import { SessionProvider } from "next-auth/react"
+
 
 const ibmPlexSans = IBM_Plex_Sans({
   variable: "--font-ibm-plex-sans",
@@ -34,11 +36,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${ibmPlexSans.variable} ${ibmPlexSansThai.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <TanstackQueryProvider>
-          <Navbar />
-          <div className="flex flex-1 flex-col">{children}</div>
-          {/* <Footer /> */}
-        </TanstackQueryProvider>
+        {/* <SessionProvider> */}
+          <TanstackQueryProvider>
+            <Navbar />
+            <div className="flex flex-1 flex-col">{children}</div>
+            {/* <Footer /> */}
+          </TanstackQueryProvider>
+        {/* </SessionProvider> */}
       </body>
     </html>
   );
