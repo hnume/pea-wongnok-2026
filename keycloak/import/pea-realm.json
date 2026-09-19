@@ -822,8 +822,11 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "xnk6VY3EuwkX13Rys5HCMxfTtSpoHxpRjurzDkCiOlMJkJV5aFbtG8TmOACKWldpPpssMGWrEj4Y5wyeo6CSLH",
-      "redirectUris": ["http://localhost:8080/api/v1/auth/callback"],
-      "webOrigins": [],
+      "redirectUris": [
+        "http://api.wongnok.localhost/api/v1/auth/callback",
+        "http://wongnok.localhost/api/auth/callback/keycloak"
+      ],
+      "webOrigins": ["http://wongnok.localhost"],
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
@@ -841,7 +844,7 @@
         "backchannel.logout.session.required": "true",
         "standard.token.exchange.enabled": "false",
         "oauth2.jwt.authorization.grant.enabled": "false",
-        "post.logout.redirect.uris": "http://localhost:3000/*",
+        "post.logout.redirect.uris": "http://wongnok.localhost/*",
         "oauth2.device.authorization.grant.enabled": "false",
         "backchannel.logout.revoke.offline.tokens": "false",
         "dpop.bound.access.tokens": "false"

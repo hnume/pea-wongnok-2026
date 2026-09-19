@@ -57,49 +57,70 @@ services:
       # Redis
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      # Keycloak
-      KEYCLOAK_BASE_URL: http://keycloak:8080
+      # Keycloak (ผ่าน caddy ด้วย domain เดียวกับที่ browser ใช้ กัน issuer ไม่ตรงกัน)
+      KEYCLOAK_BASE_URL: http://keycloak.wongnok.localhost
       KEYCLOAK_REALM: pea
       KEYCLOAK_CLIENT_ID: wongnok
       KEYCLOAK_CLIENT_SECRET: xnk6VY3EuwkX13Rys5HCMxfTtSpoHxpRjurzDkCiOlMJkJV5aFbtG8TmOACKWldpPpssMGWrEj4Y5wyeo6CSLH
-      KEYCLOAK_REDIRECT_URL: http://localhost:8080/api/v1/auth/callback
-      FRONTEND_URL: http://localhost:3000
+      KEYCLOAK_REDIRECT_URL: http://api.wongnok.localhost/api/v1/auth/callback
+      FRONTEND_URL: http://wongnok.localhost
     ports:
       - "8080:8080"
 
-  # web:
-    # build:
-    #   context: ./web
-    #   dockerfile: Dockerfile
-    # container_name: wongnok-all-in-one-web
-    # restart: always
-    # depends_on:
-    #   - api
-    # environment:
-    #   NODE_ENV: development
-    #   # ค่านี้ถูก inline ลงใน client bundle จึงต้องเป็น URL ที่ browser บนเครื่อง host
-    #   # เรียกถึงได้ ไม่ใช่ http://api:8080 ซึ่งใช้ได้เฉพาะภายในเครือข่าย compose
-    #   NEXT_PUBLIC_API_BASE_URL: http://localhost:8080/api/v1
-    #   # Docker Desktop บน macOS ไม่ส่ง event ของ filesystem ข้าม bind mount ได้ครบ
-    #   # ตัว watcher จึงไม่รู้ว่าไฟล์บน host เปลี่ยน ทำให้แก้โค้ดแล้วหน้าเว็บไม่ re-render
-    #   # ค่านี้สั่งให้ webpack เปลี่ยนไปใช้วิธี poll ไฟล์เอง แทนการรอ event
-    #   # "true" = poll ทุก 2000ms ถ้า CPU สูงเกินไปใส่เป็นตัวเลข เช่น "3000" เพื่อ poll ห่างขึ้น
-    #   # หมายเหตุ ค่านี้ทำงานเฉพาะกับ webpack ดู --webpack ใน web/Dockerfile
-    #   WATCHPACK_POLLING: "true"
-    # ports:
-    #   # ต้องเป็น 3000 เพราะ api ใช้ FRONTEND_URL redirect browser กลับมาที่พอร์ตนี้
-    #   - "3000:3000"
-    # volumes:
-    #   # bind mount source code เพื่อให้ hot reload ทำงาน
-    #   - ./web:/app
-    #   # named volume กัน artifact ที่ build ใน container ถูก bind mount ทับ
-    #   # ใช้ named ไม่ใช่ anonymous เพราะ anonymous จะถูกสร้างใหม่ทุกครั้งที่ recreate
-    #   # container แล้วกองทิ้งไว้เรื่อย ๆ ส่วน named volume ลบ/รีเซ็ตได้ด้วยชื่อ
-    #   - wongnok-web-node-modules:/app/node_modules
-    #   - wongnok-web-next:/app/.next
+  caddy:
+    image: caddy:2-alpine
+    container_name: wongnok-all-in-one-caddy
+    restart: always
+    depends_on:
+      - api
+      - keycloak
+      - web
+    ports:
+      - "80:80"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      default:
+        aliases:
+          # ให้ container อื่น ๆ (เช่น api) resolve โดเมนเดียวกับที่ browser ใช้ได้ด้วย
+          - wongnok.localhost
+          - api.wongnok.localhost
+          - keycloak.wongnok.localhost
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: wongnok-all-in-one-web
+    restart: always
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: development
+      # ค่านี้ถูก inline ลงใน client bundle จึงต้องเป็น URL ที่ browser บนเครื่อง host
+      # เรียกถึงได้ (ผ่าน caddy) ไม่ใช่ http://api:8080 ซึ่งใช้ได้เฉพาะภายในเครือข่าย compose
+      NEXT_PUBLIC_API_BASE_URL: http://api.wongnok.localhost/api/v1
+      # Docker Desktop บน macOS ไม่ส่ง event ของ filesystem ข้าม bind mount ได้ครบ
+      # ตัว watcher จึงไม่รู้ว่าไฟล์บน host เปลี่ยน ทำให้แก้โค้ดแล้วหน้าเว็บไม่ re-render
+      # ค่านี้สั่งให้ webpack เปลี่ยนไปใช้วิธี poll ไฟล์เอง แทนการรอ event
+      # "true" = poll ทุก 2000ms ถ้า CPU สูงเกินไปใส่เป็นตัวเลข เช่น "3000" เพื่อ poll ห่างขึ้น
+      # หมายเหตุ ค่านี้ทำงานเฉพาะกับ webpack ดู --webpack ใน web/Dockerfile
+      WATCHPACK_POLLING: "true"
+      # ตัวแปรที่เหลือ (KEYCLOAK_*, NEXTAUTH_*) อ่านจาก web/.env ที่ bind mount มากับ ./web:/app
+    ports:
+      # เผื่อ debug ตรง ๆ ได้ แต่ทาง browser ปกติควรเข้าผ่าน caddy ที่ wongnok.localhost
+      - "3000:3000"
+    volumes:
+      # bind mount source code เพื่อให้ hot reload ทำงาน
+      - ./web:/app
+      # named volume กัน artifact ที่ build ใน container ถูก bind mount ทับ
+      # ใช้ named ไม่ใช่ anonymous เพราะ anonymous จะถูกสร้างใหม่ทุกครั้งที่ recreate
+      # container แล้วกองทิ้งไว้เรื่อย ๆ ส่วน named volume ลบ/รีเซ็ตได้ด้วยชื่อ
+      - wongnok-web-node-modules:/app/node_modules
+      - wongnok-web-next:/app/.next
 
 volumes:
   wongnok-all-in-one-pgdata:
   wongnok-all-in-one-keycloak-data:
-  # wongnok-web-node-modules:
-  # wongnok-web-next:
+  wongnok-web-node-modules:
+  wongnok-web-next:

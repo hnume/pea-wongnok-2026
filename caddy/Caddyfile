@@ -1,0 +1,21 @@
+# ใช้ *.wongnok.localhost เป็น domain กลาง เพื่อให้ browser (host) และ container
+# (ในเครือข่าย compose) เรียกผ่านชื่อเดียวกันเสมอ แก้ปัญหา issuer/redirect URL
+# ไม่ตรงกันระหว่าง localhost:<port> (host) กับ <service-name>:<port> (container)
+#
+# .localhost ถูก resolve เป็น 127.0.0.1 อัตโนมัติโดย browser/OS (RFC 6761)
+# ไม่ต้องแก้ /etc/hosts เพิ่ม
+{
+	auto_https off
+}
+
+http://keycloak.wongnok.localhost {
+	reverse_proxy keycloak:8080
+}
+
+http://api.wongnok.localhost {
+	reverse_proxy api:8080
+}
+
+http://wongnok.localhost {
+	reverse_proxy web:3000
+}

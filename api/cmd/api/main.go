@@ -114,7 +114,13 @@ func run() error {
 	}
 
 	// Register cors
-	router.Use(cors.Default())
+	// router.Use(cors.Default())
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{cfg.Keycloak.FrontendURL},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}))
 
 	// Group version
 	v1 := router.Group("/api/v1")
@@ -129,8 +135,8 @@ func run() error {
 
 	// Auth guard
 	// TODO: เอา DevAuth ออกแล้วสลับกลับไปใช้ middleware.JWT ก่อน merge
-	// authGuard := middleware.JWT(oidcVerifer, userService)
-	authGuard := middleware.DevAuth(userService, devUserUID)
+	authGuard := middleware.JWT(oidcVerifer, userService)
+	// authGuard := middleware.DevAuth(userService, devUserUID)
 
 	// User resource
 	userGroup := v1.Group("/users")

@@ -92,7 +92,11 @@ func (hdr *handler) Create(ctx *gin.Context) {
 //	@Failure		500			{object}	httputil.ErrorResponse
 //	@Router			/recipes [get]
 func (hdr *handler) GetRecipes(ctx *gin.Context) {
-	userID, _ := reqctx.UserID(ctx.Request.Context())
+	userID, ok := reqctx.UserID(ctx.Request.Context())
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, httputil.ErrorResponse{Message: "unauthorized"})
+		return
+	}
 
 	var query GetRecipesQuery
 	if err := ctx.ShouldBindQuery(&query); err != nil {
