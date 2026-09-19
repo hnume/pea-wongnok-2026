@@ -37,3 +37,5 @@ go.work.sum
 
 # macOs temporary files
 .DS_Store
+# local scratch files, not part of the project
+Claude outputs/
