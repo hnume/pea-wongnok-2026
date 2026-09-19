@@ -57,6 +57,42 @@ export const useGetRecipes = (
   return response;
 };
 
+export interface IRecipe {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string | null;
+  difficulty: { id: string; name: string };
+  duration: { id: string; name: string };
+  ingredients: { id: number; description: string }[];
+  instructions: { id: number; description: string }[];
+  creator: { id: string; name: string };
+  isFavorite: boolean;
+  rating: { average: number; total: number };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type GetRecipeQueryOptions = Omit<
+  UseQueryOptions<IRecipe>,
+  "queryKey" | "queryFn"
+>;
+
+export const useGetRecipe = (
+  id: number,
+  queryOptions?: GetRecipeQueryOptions,
+) => {
+  const response = useQuery<IRecipe>({
+    queryKey: ["recipes", id],
+    queryFn: async (): Promise<IRecipe> => {
+      const response = await axios.get<IRecipe>(`/recipes/${id}`);
+      return response.data;
+    },
+    ...queryOptions,
+  });
+  return response;
+};
+
 /** -------------------- CREATE ----------------------- */
 
 export interface IRecipeCreationPayload {

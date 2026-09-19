@@ -13,6 +13,7 @@ import {
   PaginationPrevious,
 } from "@/components/bases";
 import { useGetRecipes } from "@/services/recipes";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 const ITEMS_PER_PAGE = 12;
@@ -98,13 +99,15 @@ const RecipeList = () => {
           }`}
         >
           {recipes.map((recipe) => (
-            <RecipeCard
-              key={recipe.id}
-              name={recipe.name}
-              imageUrl={recipe.imageUrl}
-              level={recipe.difficulty.id.toUpperCase() as RecipeLevel}
-              owner={{ name: recipe.creator.name }}
-            />
+            <Link key={recipe.id} href={`/recipes/${recipe.id}`}>
+              <RecipeCard
+                interactive
+                name={recipe.name}
+                imageUrl={recipe.imageUrl}
+                level={recipe.difficulty.id.toUpperCase() as RecipeLevel}
+                owner={{ name: recipe.creator.name }}
+              />
+            </Link>
           ))}
         </div>
       )}
