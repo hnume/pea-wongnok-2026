@@ -2,12 +2,16 @@
 
 import { Button } from "@/components/bases";
 
-import { products } from "./_shared/products";
+import { Product, products } from "./_shared/products";
+import { addItem } from "@/lib/redux/slices/shopingSlice";
+import { useAppDispatch } from "@/lib/redux/hooks";
 
 const ProductList = () => {
-  const handleAddToCart = (productId: string) => {
-    // TODO: dispatch addItem
-    void productId;
+
+  const dispatch = useAppDispatch()
+
+  const handleAddToCart = (productId: Product) => {
+    dispatch(addItem(productId))
   };
 
   return (
@@ -23,7 +27,7 @@ const ProductList = () => {
               ฿{product.price.toLocaleString()}
             </p>
           </div>
-          <Button size="small" onClick={() => handleAddToCart(product.id)}>
+          <Button size="small" onClick={() => handleAddToCart(product)}>
             + Add to cart
           </Button>
         </div>

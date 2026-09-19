@@ -1,16 +1,12 @@
 "use client";
 
 import { Button } from "@/components/bases";
-
-const mockCartItems = [
-  { id: "p1", name: "Wireless Mouse", price: 490, quantity: 2 },
-  { id: "p3", name: "USB-C Hub", price: 890, quantity: 1 },
-  { id: "p4", name: "Desk Lamp", price: 690, quantity: 3 },
-];
+import { useAppSelector } from "@/lib/redux/hooks";
 
 const CartPanel = () => {
-  // TODO: read items from store
-  const items = mockCartItems;
+  const shoppingList = useAppSelector(state => state.shoppingSlice)
+
+  const items = shoppingList.items;
   const total = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
