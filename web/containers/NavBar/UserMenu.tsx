@@ -20,7 +20,7 @@ import {
   type NavItem,
   type NavbarUser,
 } from "./navConfig";
-import { signIn, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 function UserMenuLinks({ links }: { links: NavItem[] }) {
   return (
@@ -69,7 +69,10 @@ function UserMenu({ user }: UserMenuProps) {
         <DropdownMenuSeparator />
 
         {/* TODO: sign out through auth once it is wired up. */}
-        <DropdownMenuItem onClick={() => {signOut()}} className="text-destructive data-highlighted:bg-destructive-subtle">
+        <DropdownMenuItem 
+          render={<a href="/api/auth/logout" />}
+          // onClick={() => {signOut()}} // logout only nextauth
+          className="text-destructive data-highlighted:bg-destructive-subtle">
           <LogOut className="size-4" />
           Sign out
         </DropdownMenuItem>
