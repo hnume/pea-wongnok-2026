@@ -3,10 +3,10 @@ import { IBM_Plex_Sans, IBM_Plex_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import { Footer, Navbar, type NavbarUser } from "@/containers";
 import TanstackQueryProvider from "@/lib/tanstack/TanstackQueryProvider";
-import { SessionProvider } from "next-auth/react"
+import { SessionProvider } from "next-auth/react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth-options";
-
+import StoreProvider from "@/lib/redux/StoreProvider";
 
 const ibmPlexSans = IBM_Plex_Sans({
   variable: "--font-ibm-plex-sans",
@@ -32,11 +32,16 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-
   const session = await getServerSession(authOptions);
-  const user = session?.user
-  
-  const customUser: NavbarUser | undefined = user ?  { name: user?.name ?? "", email: user?.email ?? "", imageUrl: user?.image ?? ""} : undefined
+  const user = session?.user;
+
+  const customUser: NavbarUser | undefined = user
+    ? {
+        name: user?.name ?? "",
+        email: user?.email ?? "",
+        imageUrl: user?.image ?? "",
+      }
+    : undefined;
 
   return (
     <html
@@ -44,13 +49,15 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${ibmPlexSans.variable} ${ibmPlexSansThai.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {/* <SessionProvider> */}
+        <StoreProvider>
+          {/* <SessionProvider> */}
           <TanstackQueryProvider>
             <Navbar user={customUser} />
             <div className="flex flex-1 flex-col">{children}</div>
             {/* <Footer /> */}
           </TanstackQueryProvider>
-        {/* </SessionProvider> */}
+          {/* </SessionProvider> */}
+        </StoreProvider>
       </body>
     </html>
   );
