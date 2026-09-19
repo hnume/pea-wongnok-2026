@@ -1,9 +1,11 @@
 "use client";
 
 import { Button } from "@/components/bases";
-import { useAppSelector } from "@/lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { clearCart, removeItem, decreaseQuantity, increaseQuantity } from "@/lib/redux/slices/shopingSlice";
 
 const CartPanel = () => {
+  const dispatch = useAppDispatch()
   const shoppingList = useAppSelector(state => state.shoppingSlice)
 
   const items = shoppingList.items;
@@ -13,30 +15,27 @@ const CartPanel = () => {
   );
 
   const handleDecrease = (id: string) => {
-    // TODO: dispatch decreaseQuantity
-    void id;
+    dispatch(decreaseQuantity(id))
   };
   const handleIncrease = (id: string) => {
-    // TODO: dispatch increaseQuantity
-    void id;
+    dispatch(increaseQuantity(id))
   };
   const handleRemove = (id: string) => {
-    // TODO: dispatch removeItem
-    void id;
+    dispatch(removeItem(id))
   };
   const handleClear = () => {
-    // TODO: dispatch clearCart
+    dispatch(clearCart())
   };
 
   // Swap to this when the cart has no items (items.length === 0):
-  // if (items.length === 0) {
-  //   return (
-  //     <div className="rounded-lg border border-border p-4">
-  //       <h2 className="wongnok-text-h3">Your Cart</h2>
-  //       <p className="mt-4 text-muted-foreground">Cart is empty.</p>
-  //     </div>
-  //   );
-  // }
+  if (items.length === 0) {
+    return (
+      <div className="rounded-lg border border-border p-4">
+        <h2 className="wongnok-text-h3">Your Cart</h2>
+        <p className="mt-4 text-muted-foreground">Cart is empty.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4 rounded-lg border border-border p-4">
@@ -96,4 +95,4 @@ const CartPanel = () => {
   );
 };
 
-export default CartPanel;
+export default CartPanel
